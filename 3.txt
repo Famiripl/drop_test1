@@ -1,0 +1,90 @@
+// Tic-Tac-Toe Game
+
+// Import necessary libraries
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+// Define the board
+let board = [
+  ['', '', ''],
+  ['', '', ''],
+  ['', '', '']
+];
+
+// Define the players
+let players = ['X', 'O'];
+
+// Define the current player
+let currentPlayer;
+
+// Define the game state
+let gameOver = false;
+
+// Define the winning combinations
+let winningCombos = [
+  [0, 1, 2],
+  [3, 4, 5],
+  [6, 7, 8],
+  [0, 3, 6],
+  [1, 4, 7],
+  [2, 5, 8],
+  [0, 4, 8],
+  [2, 4, 6]
+];
+
+// Function to print the board
+function printBoard() {
+  console.log(`${board[0][0]} | ${board[0][1]} | ${board[0][2]}`);
+  console.log(`${board[1][0]} | ${board[1][1]} | ${board[1][2]}`);
+  console.log(`${board[2][0]} | ${board[2][1]} | ${board[2][2]}`);
+}
+
+// Function to check if the board is full
+function boardFull() {
+  return board.every(row => row.every(cell => cell !== ''));
+}
+
+// Function to check if a player has won
+function checkWin(player) {
+  return winningCombos.some(combination => {
+    return combination.every(index => {
+      return board[Math.floor(index / 3)][index % 3] === player;
+    });
+  });
+}
+
+// Function to get the current player's move
+function getMove(player) {
+  console.log(`It's ${player}'s turn.`);
+  rl.question('Enter a number between 0 and 8: ', answer => {
+    let move = parseInt(answer);
+    if (isNaN(move) || move < 0 || move > 8) {
+      console.log('Please enter a valid number.');
+      getMove(player);
+    } else if (board[Math.floor(move / 3)][move % 3] !== '') {
+      console.log('That space is already taken.');
+      getMove(player);
+    } else {
+      board[Math.floor(move / 3)][move % 3] = player;
+      if (checkWin(player)) {
+        console.log(`${player} wins!`);
+        gameOver = true;
+      } else if (boardFull()) {
+        console.log('It\'s a tie!');
+        gameOver = true;
+      } else {
+        currentPlayer = currentPlayer === players[0] ? players[1] : players[0];
+        printBoard();
+        getMove(currentPlayer);
+      }
+    }
+  });
+}
+
+// Start the game
+currentPlayer = players[0];
+printBoard();
+getMove(currentPlayer);
